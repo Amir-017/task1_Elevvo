@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from "react";
 import {
   Search, LayoutGrid, List, CalendarDays, CheckCircle2, AlertTriangle,
@@ -6,10 +7,26 @@ import {
 import { useProducts } from "../Store/products";
 
 const STATUS = {
-  "In Progress": { icon: Clock,         badge: "bg-blue-50 text-blue-700 ring-blue-200",     bar: "bg-blue-500" },
-  Completed:     { icon: CheckCircle2,  badge: "bg-green-50 text-green-700 ring-green-200",  bar: "bg-green-500" },
-  Pending:       { icon: Hourglass,     badge: "bg-gray-100 text-gray-700 ring-gray-200",    bar: "bg-gray-400" },
-  Overdue:       { icon: AlertTriangle, badge: "bg-red-50 text-red-700 ring-red-200",        bar: "bg-red-500" },
+  "In Progress": {
+    icon: Clock,
+    badge: "bg-blue-500/10 text-blue-400 ring-blue-500/20",
+    bar: "bg-blue-500",
+  },
+  Completed: {
+    icon: CheckCircle2,
+    badge: "bg-emerald-500/10 text-emerald-400 ring-emerald-500/20",
+    bar: "bg-emerald-500",
+  },
+  Pending: {
+    icon: Hourglass,
+    badge: "bg-slate-500/10 text-slate-400 ring-slate-500/20",
+    bar: "bg-slate-400",
+  },
+  Overdue: {
+    icon: AlertTriangle,
+    badge: "bg-rose-500/10 text-rose-400 ring-rose-500/20",
+    bar: "bg-rose-500",
+  },
 };
 
 const FILTERS = ["All", "In Progress", "Completed", "Pending", "Overdue"];
@@ -24,10 +41,14 @@ function deadlineLabel(p) {
   return `${d} days left`;
 }
 
+const cardStyle =
+  "rounded-2xl border border-slate-700/50 bg-[#1e293b]/70 shadow-xl shadow-black/10 backdrop-blur-sm";
+
 function StatusBadge({ status }) {
   const { icon: Icon, badge } = STATUS[status];
+
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ring-1 ring-inset ${badge}`}>
+    <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${badge}`}>
       <Icon size={13} />
       {status}
     </span>
@@ -36,18 +57,23 @@ function StatusBadge({ status }) {
 
 function ProgressBar({ value, status }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="h-2 flex-1 bg-gray-100 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${STATUS[status].bar}`} style={{ width: `${value}%` }} />
+    <div className="flex items-center gap-3">
+      <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-700/70">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${STATUS[status].bar}`}
+          style={{ width: `${value}%` }}
+        />
       </div>
-      <span className="text-xs font-medium text-gray-600 w-9 text-right">{value}%</span>
+      <span className="w-9 text-right text-xs font-semibold tabular-nums text-slate-300">
+        {value}%
+      </span>
     </div>
   );
 }
 
 function Avatar({ name }) {
   return (
-    <div className="w-9 h-9 shrink-0 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-semibold">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/20 to-violet-500/20 text-sm font-bold text-indigo-300">
       {name.slice(0, 2).toUpperCase()}
     </div>
   );
@@ -55,29 +81,64 @@ function Avatar({ name }) {
 
 function ProjectCard({ p }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-4">
+    <div className={`${cardStyle} flex flex-col gap-5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:shadow-indigo-950/30`}>
+
+      {/* Project Info */}
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex min-w-0 items-center gap-3">
           <Avatar name={p.client} />
+
           <div className="min-w-0">
-            <h3 className="font-semibold truncate">{p.name}</h3>
-            <p className="text-sm text-gray-500 truncate">{p.client}</p>
+            <h3 className="truncate font-bold text-white">{p.name}</h3>
+            <p className="mt-1 truncate text-sm text-slate-400">{p.client}</p>
           </div>
         </div>
+
         <StatusBadge status={p.status} />
       </div>
 
-      <ProgressBar value={p.progress} status={p.status} />
+      {/* Progress */}
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-xs font-medium text-slate-400">Project Progress</span>
+          <span className="text-xs text-slate-500">Completion</span>
+        </div>
 
-      <div className="flex items-center justify-between text-sm text-gray-600 pt-3 border-t border-gray-100">
-        <span className="flex items-center gap-1.5">
-          <CalendarDays size={15} /> {p.deadline}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Wallet size={15} /> ${p.budget.toLocaleString()}
-        </span>
+        <ProgressBar value={p.progress} status={p.status} />
       </div>
-      <p className={`text-xs font-medium ${p.status === "Overdue" ? "text-red-600" : "text-gray-500"}`}>
+
+      {/* Project Details */}
+      <div className="grid grid-cols-2 gap-3 border-t border-slate-700/60 pt-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+            <CalendarDays size={15} />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-[11px] text-slate-500">Deadline</p>
+            <p className="truncate text-xs font-medium text-slate-300">{p.deadline}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+            <Wallet size={15} />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-[11px] text-slate-500">Budget</p>
+            <p className="truncate text-xs font-semibold text-slate-300">
+              ${p.budget.toLocaleString()}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Deadline Status */}
+      <p className={`border-t border-slate-700/60 pt-3 text-xs font-semibold ${
+        p.status === "Overdue" ? "text-rose-400" : "text-slate-400"
+      }`}>
+        {p.status === "Overdue" ? "⚠ " : "● "}
         {deadlineLabel(p)}
       </p>
     </div>
@@ -86,38 +147,56 @@ function ProjectCard({ p }) {
 
 function ProjectsTable({ items }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
-      <table className="w-full text-sm min-w-[720px]">
-        <thead className="bg-gray-50 text-gray-500 text-left">
+    <div className={`${cardStyle} overflow-x-auto`}>
+      <table className="w-full min-w-[720px] text-sm">
+
+        <thead className="border-b border-slate-700/60 bg-slate-800/70 text-left text-xs uppercase tracking-wider text-slate-400">
           <tr>
-            <th className="px-5 py-3 font-medium">Project</th>
-            <th className="px-5 py-3 font-medium">Status</th>
-            <th className="px-5 py-3 font-medium w-48">Progress</th>
-            <th className="px-5 py-3 font-medium">Deadline</th>
-            <th className="px-5 py-3 font-medium text-right">Budget</th>
+            <th className="px-5 py-4 font-semibold">Project</th>
+            <th className="px-5 py-4 font-semibold">Status</th>
+            <th className="w-48 px-5 py-4 font-semibold">Progress</th>
+            <th className="px-5 py-4 font-semibold">Deadline</th>
+            <th className="px-5 py-4 text-right font-semibold">Budget</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+
+        <tbody className="divide-y divide-slate-700/50">
           {items.map((p) => (
-            <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+            <tr
+              key={p.id}
+              className="transition-colors duration-200 hover:bg-indigo-500/5"
+            >
               <td className="px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Avatar name={p.client} />
+
                   <div>
-                    <p className="font-medium">{p.name}</p>
-                    <p className="text-gray-500">{p.client}</p>
+                    <p className="font-semibold text-white">{p.name}</p>
+                    <p className="mt-1 text-xs text-slate-400">{p.client}</p>
                   </div>
                 </div>
               </td>
-              <td className="px-5 py-4"><StatusBadge status={p.status} /></td>
-              <td className="px-5 py-4"><ProgressBar value={p.progress} status={p.status} /></td>
+
               <td className="px-5 py-4">
-                <p>{p.deadline}</p>
-                <p className={`text-xs ${p.status === "Overdue" ? "text-red-600" : "text-gray-500"}`}>
+                <StatusBadge status={p.status} />
+              </td>
+
+              <td className="px-5 py-4">
+                <ProgressBar value={p.progress} status={p.status} />
+              </td>
+
+              <td className="px-5 py-4">
+                <p className="text-slate-300">{p.deadline}</p>
+                <p className={`mt-1 text-xs ${
+                  p.status === "Overdue" ? "text-rose-400" : "text-slate-500"
+                }`}>
                   {deadlineLabel(p)}
                 </p>
               </td>
-              <td className="px-5 py-4 text-right font-medium">${p.budget.toLocaleString()}</td>
+
+              <td className="px-5 py-4 text-right font-semibold text-white">
+                ${p.budget.toLocaleString()}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -150,35 +229,53 @@ export const Projects = () => {
   const totalBudget = products.reduce((s, p) => s + p.budget, 0);
 
   return (
-    <div className="p-4 space-y-5">
-      {/* address */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="min-h-screen space-y-7 bg-[#0f172a] p-4 sm:p-6 lg:p-8">
+
+      {/* Page Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
-            <FolderKanban size={22} />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+            <FolderKanban size={24} />
           </div>
+
           <div>
-            <h1 className="text-2xl font-bold">Projects</h1>
-            <p className="text-gray-500 text-sm">
-              {products.length} projects · ${totalBudget.toLocaleString()} total budget
+            <div className="mb-1 flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+                Workspace Management
+              </span>
+            </div>
+
+            <h1 className="text-3xl font-bold tracking-tight text-white">
+              Projects
+            </h1>
+
+            <p className="mt-1 text-sm text-slate-400">
+              {products.length} projects
+              <span className="mx-2 text-slate-600">·</span>
+              ${totalBudget.toLocaleString()} total budget
             </p>
           </div>
         </div>
       </div>
 
       {/* Search and View */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search
+            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+          />
+
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by project or client"
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white shadow-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            className="w-full rounded-xl border border-slate-700/60 bg-[#1e293b]/70 py-3 pl-11 pr-4 text-sm text-white shadow-lg shadow-black/5 outline-none transition-all placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
 
-        <div className="flex bg-white rounded-xl shadow-sm border border-gray-200 p-1 self-start">
+        <div className="flex self-start rounded-xl border border-slate-700/60 bg-[#1e293b]/70 p-1">
           {[
             { id: "cards", icon: LayoutGrid, label: "Cards" },
             { id: "table", icon: List, label: "Table" },
@@ -187,11 +284,14 @@ export const Projects = () => {
               key={id}
               onClick={() => setView(id)}
               aria-label={`${label} view`}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-sm transition-colors ${
-                view === id ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                view === id
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                  : "text-slate-400 hover:bg-slate-700/70 hover:text-white"
               }`}
             >
-              <Icon size={16} /> {label}
+              <Icon size={16} />
+              {label}
             </button>
           ))}
         </div>
@@ -203,27 +303,52 @@ export const Projects = () => {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-300 ${
               filter === f
-                ? "bg-indigo-600 text-white"
-                : "bg-white text-gray-600 shadow-sm border border-gray-200 hover:bg-gray-50"
+                ? "border-indigo-500/40 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                : "border-slate-700/60 bg-[#1e293b]/70 text-slate-400 hover:border-slate-500 hover:bg-slate-800 hover:text-white"
             }`}
           >
-            {f} <span className="opacity-70">({counts[f] || 0})</span>
+            {f}
+            <span className={`rounded-md px-1.5 py-0.5 text-xs ${
+              filter === f
+                ? "bg-white/15 text-white"
+                : "bg-slate-700/70 text-slate-400"
+            }`}>
+              {counts[f] || 0}
+            </span>
           </button>
         ))}
       </div>
 
+      {/* Results Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-semibold text-white">All Projects</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Showing {visible.length} of {products.length} projects
+          </p>
+        </div>
+      </div>
+
       {/* Content */}
       {visible.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm py-16 flex flex-col items-center text-center text-gray-500">
-          <SearchX size={36} className="mb-3 text-gray-300" />
-          <p className="font-medium text-gray-700">No projects found</p>
-          <p className="text-sm">Try a different search or clear the status filter.</p>
+        <div className={`${cardStyle} flex flex-col items-center justify-center px-4 py-20 text-center`}>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800 text-slate-500">
+            <SearchX size={32} />
+          </div>
+
+          <p className="font-semibold text-white">No projects found</p>
+
+          <p className="mt-2 text-sm text-slate-400">
+            Try a different search or clear the status filter.
+          </p>
         </div>
       ) : view === "cards" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {visible.map((p) => <ProjectCard key={p.id} p={p} />)}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {visible.map((p) => (
+            <ProjectCard key={p.id} p={p} />
+          ))}
         </div>
       ) : (
         <ProjectsTable items={visible} />
