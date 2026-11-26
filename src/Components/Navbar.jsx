@@ -1,5 +1,10 @@
+import { NavLink, Link } from "react-router-dom";
+import { useProfile } from "../Store/profile";
 
 export const Navbar = () => {
+  const name = useProfile((s) => s.profile.name);
+  const jobTitle = useProfile((s) => s.profile.jobTitle);
+
   const links = [
     { name: "Home", path: "/", icon: "⌂" },
     { name: "Projects", path: "/projects", icon: "▦" },
@@ -9,54 +14,42 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-700/50 bg-[#0f172a]/95 px-6 py-4 shadow-xl shadow-black/10 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between">
-
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-xl font-bold text-white shadow-lg shadow-indigo-500/30">
             N
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-wide text-white">
-              Nexora
-            </h1>
+            <h1 className="text-xl font-bold tracking-wide text-white">Nexora</h1>
             <p className="text-[10px] font-medium tracking-[2px] text-slate-400">
               CLIENT DASHBOARD
             </p>
           </div>
-        </a>
+        </Link>
 
-        {/* Navigation Links */}
         <ul className="flex items-center gap-2 rounded-2xl border border-slate-700/50 bg-slate-800/60 p-1.5">
-          {links.map((link) => {
-            const active = window.location.pathname === link.path;
-
-            return (
-              <li key={link.path}>
-                <a
-                  href={link.path}
-                  className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
-                    active
+          {links.map((link) => (
+            <li key={link.path}>
+              <NavLink
+                to={link.path}
+                end={link.path === "/"}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
+                    isActive
                       ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
                       : "text-slate-400 hover:bg-slate-700/70 hover:text-white"
-                  }`}
-                >
-                  <span>{link.icon}</span>
-                  {link.name}
-                </a>
-              </li>
-            );
-          })}
+                  }`
+                }
+              >
+                <span>{link.icon}</span>
+                {link.name}
+              </NavLink>
+            </li>
+          ))}
         </ul>
 
-        {/* Right Section */}
         <div className="flex items-center gap-4">
           <button className="relative rounded-xl p-2.5 text-slate-400 transition hover:bg-slate-800 hover:text-white">
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -69,15 +62,15 @@ export const Navbar = () => {
 
           <div className="hidden h-8 w-px bg-slate-700 sm:block" />
 
-          <button className="flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-slate-800">
+          <Link to="/profile" className="flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-slate-800">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 font-bold text-white">
-              A
+              {(name || "A").slice(0, 1).toUpperCase()}
             </div>
             <div className="hidden text-left sm:block">
-              <p className="text-sm font-semibold text-white">Admin</p>
-              <p className="text-xs text-slate-400">Administrator</p>
+              <p className="text-sm font-semibold text-white">{name || "Admin"}</p>
+              <p className="text-xs text-slate-400">{jobTitle || "Administrator"}</p>
             </div>
-          </button>
+          </Link>
         </div>
       </nav>
     </header>
