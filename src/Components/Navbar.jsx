@@ -1,9 +1,13 @@
 import { NavLink, Link } from "react-router-dom";
+import { Sun, Moon } from "lucide-react";
 import { useProfile } from "../Store/profile";
+import { useTheme } from "../Store/theme";
 
 export const Navbar = () => {
   const name = useProfile((s) => s.profile.name);
   const jobTitle = useProfile((s) => s.profile.jobTitle);
+  const theme = useTheme((s) => s.theme);
+  const toggleTheme = useTheme((s) => s.toggleTheme);
 
   const links = [
     { name: "Home", path: "/", icon: "⌂" },
@@ -48,16 +52,12 @@ export const Navbar = () => {
         </ul>
 
         <div className="flex items-center gap-4">
-          <button className="relative rounded-xl p-2.5 text-slate-400 transition hover:bg-slate-800 hover:text-white">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.8"
-                d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 01-6 0"
-              />
-            </svg>
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-[#0f172a]" />
+          <button
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            className="rounded-xl p-2.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
           <div className="hidden h-8 w-px bg-slate-700 sm:block" />
