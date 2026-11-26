@@ -1,9 +1,9 @@
-
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   PieChart, Pie, Cell, Legend, ResponsiveContainer,
 } from "recharts";
 import { useProducts } from "../Store/products";
+import { useTheme } from "../Store/theme";
 
 // fake data for demonstration purposes
 const monthlyEarnings = [
@@ -25,7 +25,24 @@ const activities = [
 const PIE_COLORS = ["#818cf8", "#34d399", "#fbbf24", "#fb7185"];
 
 const cardStyle =
-  "rounded-2xl border border-slate-700/50 bg-[#1e293b]/70 p-5 shadow-xl shadow-black/10 backdrop-blur-sm transition-all duration-300 hover:border-indigo-500/40";
+  "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-indigo-400/60 dark:border-slate-700/50 dark:bg-[#1e293b]/70 dark:shadow-xl dark:shadow-black/10 dark:backdrop-blur-sm dark:hover:border-indigo-500/40";
+
+function useChartColors() {
+  const isDark = useTheme((s) => s.theme) === "dark";
+  return {
+    grid: isDark ? "#334155" : "#e2e8f0",
+    tick: isDark ? "#94a3b8" : "#64748b",
+    cursor: isDark ? "#334155" : "#e2e8f0",
+    tooltip: {
+      backgroundColor: isDark ? "#0f172a" : "#ffffff",
+      border: `1px solid ${isDark ? "#334155" : "#e2e8f0"}`,
+      borderRadius: "12px",
+      color: isDark ? "#ffffff" : "#0f172a",
+    },
+    barItem: isDark ? "#818cf8" : "#4f46e5",
+    pieItem: isDark ? "#cbd5e1" : "#334155",
+  };
+}
 
 function Card({ title, value, icon, color }) {
   return (
@@ -35,8 +52,8 @@ function Card({ title, value, icon, color }) {
       </div>
 
       <div className="min-w-0">
-        <p className="mb-1 text-sm font-medium text-slate-400">{title}</p>
-        <p className="text-2xl font-bold tracking-tight text-white">
+        <p className="mb-1 text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
+        <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
           {value}
         </p>
       </div>
@@ -48,11 +65,11 @@ function StatBar({ label, value, color }) {
   return (
     <div>
       <div className="mb-2 flex justify-between text-sm">
-        <span className="font-medium text-slate-400">{label}</span>
-        <span className="font-bold text-white">{value}%</span>
+        <span className="font-medium text-slate-500 dark:text-slate-400">{label}</span>
+        <span className="font-bold text-slate-900 dark:text-white">{value}%</span>
       </div>
 
-      <div className="h-2.5 overflow-hidden rounded-full bg-slate-700/70">
+      <div className="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700/70">
         <div
           className={`h-full rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${value}%` }}
@@ -79,13 +96,13 @@ function BasicStats({ products }) {
     <div className={cardStyle}>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Basic Stats</h2>
-          <p className="mt-1 text-xs text-slate-400">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Basic Stats</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Your project performance
           </p>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18M18 17V9m-5 8V5m-5 12v-5" />
           </svg>
@@ -106,27 +123,27 @@ function BasicStats({ products }) {
         />
       </div>
 
-      <div className="mt-7 grid grid-cols-2 gap-4 border-t border-slate-700/70 pt-5">
-        <div className="rounded-xl bg-slate-800/60 p-3">
+      <div className="mt-7 grid grid-cols-2 gap-4 border-t border-slate-200 pt-5 dark:border-slate-700/70">
+        <div className="rounded-xl bg-slate-100 p-3 dark:bg-slate-800/60">
           <div className="mb-2 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-rose-400" />
-            <p className="text-xs font-medium text-slate-400">Overdue</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Overdue</p>
           </div>
-          <p className="text-2xl font-bold text-rose-400">{overdue}</p>
+          <p className="text-2xl font-bold text-rose-600 dark:text-rose-400">{overdue}</p>
         </div>
 
-        <div className="rounded-xl bg-slate-800/60 p-3">
+        <div className="rounded-xl bg-slate-100 p-3 dark:bg-slate-800/60">
           <div className="mb-2 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
-            <p className="text-xs font-medium text-slate-400">Next deadline</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Next deadline</p>
           </div>
 
-          <p className="truncate text-sm font-bold text-white">
+          <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
             {next ? next.name : "None"}
           </p>
 
           {next && (
-            <p className="mt-1 text-xs text-slate-400">{next.deadline}</p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{next.deadline}</p>
           )}
         </div>
       </div>
@@ -135,17 +152,19 @@ function BasicStats({ products }) {
 }
 
 function EarningsChart() {
+  const c = useChartColors();
+
   return (
     <div className={cardStyle}>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Monthly Earnings</h2>
-          <p className="mt-1 text-xs text-slate-400">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Monthly Earnings</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Your monthly income overview
           </p>
         </div>
 
-        <div className="rounded-xl bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400">
+        <div className="rounded-xl bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
           Revenue
         </div>
       </div>
@@ -153,34 +172,25 @@ function EarningsChart() {
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={monthlyEarnings}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              stroke="#334155"
-            />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={c.grid} />
 
             <XAxis
               dataKey="month"
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: c.tick, fontSize: 12 }}
               axisLine={false}
               tickLine={false}
             />
 
             <YAxis
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: c.tick, fontSize: 12 }}
               axisLine={false}
               tickLine={false}
             />
 
             <Tooltip
-              cursor={{ fill: "#334155", opacity: 0.3 }}
-              contentStyle={{
-                backgroundColor: "#0f172a",
-                border: "1px solid #334155",
-                borderRadius: "12px",
-                color: "#fff",
-              }}
-              itemStyle={{ color: "#818cf8" }}
+              cursor={{ fill: c.cursor, opacity: 0.3 }}
+              contentStyle={c.tooltip}
+              itemStyle={{ color: c.barItem }}
               formatter={(v) => [`$${v}`, "Earnings"]}
             />
 
@@ -198,6 +208,7 @@ function EarningsChart() {
 }
 
 function TypesChart({ products }) {
+  const c = useChartColors();
 
   const data = Object.entries(
     products.reduce((acc, p) => {
@@ -209,8 +220,8 @@ function TypesChart({ products }) {
   return (
     <div className={cardStyle}>
       <div className="mb-6">
-        <h2 className="text-lg font-bold text-white">Projects by Type</h2>
-        <p className="mt-1 text-xs text-slate-400">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Projects by Type</h2>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
           Distribution of your projects
         </p>
       </div>
@@ -238,18 +249,13 @@ function TypesChart({ products }) {
             </Pie>
 
             <Tooltip
-              contentStyle={{
-                backgroundColor: "#0f172a",
-                border: "1px solid #334155",
-                borderRadius: "12px",
-                color: "#fff",
-              }}
-              itemStyle={{ color: "#cbd5e1" }}
+              contentStyle={c.tooltip}
+              itemStyle={{ color: c.pieItem }}
             />
 
             <Legend
               formatter={(value) => (
-                <span className="text-xs text-slate-300">{value}</span>
+                <span className="text-xs text-slate-600 dark:text-slate-300">{value}</span>
               )}
             />
           </PieChart>
@@ -264,29 +270,29 @@ function RecentActivity() {
     <div className={cardStyle}>
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Recent Activity</h2>
-          <p className="mt-1 text-xs text-slate-400">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Recent Activity</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Latest updates from your workspace
           </p>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
         </div>
       </div>
 
-      <ul className="divide-y divide-slate-700/60">
+      <ul className="divide-y divide-slate-200 dark:divide-slate-700/60">
         {activities.map((a) => (
           <li
             key={a.id}
-            className="flex items-start justify-between gap-4 py-4 transition-colors duration-200 hover:bg-slate-800/40"
+            className="flex items-start justify-between gap-4 py-4 transition-colors duration-200 hover:bg-slate-100 dark:hover:bg-slate-800/40"
           >
             <div className="flex min-w-0 items-start gap-3">
               <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-400 shadow-lg shadow-indigo-500/50" />
 
-              <span className="text-sm leading-6 text-slate-300">
+              <span className="text-sm leading-6 text-slate-700 dark:text-slate-300">
                 {a.text}
               </span>
             </div>
@@ -313,33 +319,33 @@ export const Dashboard = () => {
   const tasksDue = products.filter((p) => p.status !== "Completed").length;
 
   return (
-    <div className="min-h-screen space-y-7 bg-[#0f172a] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen space-y-7 bg-slate-50 p-4 transition-colors duration-300 dark:bg-[#0f172a] sm:p-6 lg:p-8">
 
       {/* Page Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div className="mb-2 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+            <span className="text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
               Dashboard Overview
             </span>
           </div>
 
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             Overview
           </h1>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Here's a quick overview of your projects.
           </p>
         </div>
 
-        <div className="flex w-fit items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/60 px-4 py-2.5">
-          <svg className="h-4 w-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 dark:border-slate-700/60 dark:bg-slate-800/60">
+          <svg className="h-4 w-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
           </svg>
 
-          <span className="text-xs font-medium text-slate-300">
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
             Workspace Overview
           </span>
         </div>
@@ -351,21 +357,21 @@ export const Dashboard = () => {
           title="Total Projects"
           value={totalProjects}
           icon="📁"
-          color="bg-indigo-500/15 text-indigo-400"
+          color="bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
         />
 
         <Card
           title="Earnings"
           value={`$${earnings.toLocaleString()}`}
           icon="💰"
-          color="bg-emerald-500/15 text-emerald-400"
+          color="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
         />
 
         <Card
           title="Tasks Due"
           value={tasksDue}
           icon="⏰"
-          color="bg-amber-500/15 text-amber-400"
+          color="bg-amber-500/15 text-amber-600 dark:text-amber-400"
         />
       </div>
 
