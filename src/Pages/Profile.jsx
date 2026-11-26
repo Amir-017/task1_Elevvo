@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 import { User, Mail, Phone, Briefcase, Lock, Save } from "lucide-react";
 import { useProfile } from "../Store/profile";
 
@@ -29,9 +30,36 @@ export const Profile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    saveProfile({ ...form, name: form.name.trim() });
-    setPassword(""); // الباسورد مش بيتخزن
-    alert("Profile saved successfully");
+    const name = form.name.trim();
+    saveProfile({ ...form, name });
+    setPassword("");
+
+    Swal.fire({
+      icon: "success",
+      title: "Profile saved",
+      text: `Your changes have been saved, ${name}.`,
+      confirmButtonText: "Done",
+      confirmButtonColor: "#4f46e5",
+      timer: 2500,
+      timerProgressBar: true,
+      customClass: {
+        popup: "rounded-2xl",
+        confirmButton: "rounded-xl",
+      },
+    });
+  };
+
+  const handleReset = () => {
+    setForm(saved);
+    setPassword("");
+    Swal.fire({
+      toast: true,
+      position: "top-end",
+      icon: "info",
+      title: "Changes discarded",
+      showConfirmButton: false,
+      timer: 1800,
+    });
   };
 
   const initials = (form.name || "?").slice(0, 2).toUpperCase();
@@ -42,7 +70,6 @@ export const Profile = () => {
       <p className="text-gray-500 text-sm mb-5">Update your personal information.</p>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-5">
-        {/* الصورة الرمزية */}
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-semibold">
             {initials}
@@ -90,7 +117,7 @@ export const Profile = () => {
         </div>
 
         <div className="flex justify-end gap-3">
-          <button type="button" onClick={() => setForm(saved)}
+          <button type="button" onClick={handleReset}
             className="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">
             Reset
           </button>
