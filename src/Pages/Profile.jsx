@@ -1,20 +1,20 @@
-
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { User, Mail, Phone, Briefcase, Lock, Save } from "lucide-react";
 import { useProfile } from "../Store/profile";
+import { useTheme } from "../Store/theme";
 
 function Field({ label, icon: Icon, children }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-slate-300">
+      <span className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
         {label}
       </span>
 
       <div className="relative">
         <Icon
           size={17}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         />
         {children}
       </div>
@@ -23,14 +23,20 @@ function Field({ label, icon: Icon, children }) {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-slate-700/60 bg-slate-800/60 py-3 pl-11 pr-4 text-sm text-white outline-none transition-all duration-300 placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20";
+  "w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700/60 dark:bg-slate-800/60 dark:text-white dark:placeholder:text-slate-500";
 
 export const Profile = () => {
   const saved = useProfile((s) => s.profile);
   const saveProfile = useProfile((s) => s.saveProfile);
+  const isDark = useTheme((s) => s.theme) === "dark";
 
   const [form, setForm] = useState(saved);
   const [password, setPassword] = useState("");
+
+  const swalTheme = {
+    background: isDark ? "#1e293b" : "#ffffff",
+    color: isDark ? "#f1f5f9" : "#0f172a",
+  };
 
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -42,6 +48,7 @@ export const Profile = () => {
     setPassword("");
 
     Swal.fire({
+      ...swalTheme,
       icon: "success",
       title: "Profile saved",
       text: `Your changes have been saved, ${name}.`,
@@ -60,6 +67,7 @@ export const Profile = () => {
     setForm(saved);
     setPassword("");
     Swal.fire({
+      ...swalTheme,
       toast: true,
       position: "top-end",
       icon: "info",
@@ -72,22 +80,22 @@ export const Profile = () => {
   const initials = (form.name || "?").slice(0, 2).toUpperCase();
 
   return (
-    <div className="min-h-screen space-y-7 bg-[#0f172a] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen space-y-7 bg-slate-50 p-4 transition-colors duration-300 dark:bg-[#0f172a] sm:p-6 lg:p-8">
 
       {/* Page Header */}
       <div>
         <div className="mb-2 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+          <span className="text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
             Account Management
           </span>
         </div>
 
-        <h1 className="text-3xl font-bold tracking-tight text-white">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
           Profile Settings
         </h1>
 
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Manage your personal information and account preferences.
         </p>
       </div>
@@ -96,7 +104,7 @@ export const Profile = () => {
       <div className="mx-auto max-w-4xl space-y-5">
 
         {/* Profile Overview */}
-        <div className="overflow-hidden rounded-2xl border border-slate-700/50 bg-[#1e293b]/70 shadow-xl shadow-black/10">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700/50 dark:bg-[#1e293b]/70 dark:shadow-xl dark:shadow-black/10">
 
           <div className="h-28 bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-600 sm:h-36" />
 
@@ -104,16 +112,16 @@ export const Profile = () => {
             <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 
               <div className="flex items-end gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-[#1e293b] bg-gradient-to-br from-indigo-500 to-violet-600 text-2xl font-bold text-white shadow-xl">
+                <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-white bg-gradient-to-br from-indigo-500 to-violet-600 text-2xl font-bold text-white shadow-xl dark:border-[#1e293b]">
                   {initials}
                 </div>
 
                 <div className="pb-1">
-                  <h2 className="text-lg font-bold text-white">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                     {form.name || "Your name"}
                   </h2>
 
-                  <p className="mt-1 text-sm text-slate-400">
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     {form.jobTitle || "Your job title"}
                   </p>
                 </div>
@@ -121,7 +129,7 @@ export const Profile = () => {
 
               <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span className="text-xs font-semibold text-emerald-400">
+                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                   Active Account
                 </span>
               </div>
@@ -132,21 +140,21 @@ export const Profile = () => {
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-slate-700/50 bg-[#1e293b]/70 p-5 shadow-xl shadow-black/10 backdrop-blur-sm sm:p-7"
+          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700/50 dark:bg-[#1e293b]/70 dark:shadow-xl dark:shadow-black/10 dark:backdrop-blur-sm sm:p-7"
         >
 
           {/* Form Header */}
-          <div className="mb-7 flex items-center gap-3 border-b border-slate-700/60 pb-5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+          <div className="mb-7 flex items-center gap-3 border-b border-slate-200 pb-5 dark:border-slate-700/60">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
               <User size={22} />
             </div>
 
             <div>
-              <h2 className="font-bold text-white">
+              <h2 className="font-bold text-slate-900 dark:text-white">
                 Personal Information
               </h2>
 
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Update your personal details below.
               </p>
             </div>
@@ -216,7 +224,7 @@ export const Profile = () => {
 
             {/* Bio */}
             <label className="block md:col-span-2">
-              <span className="mb-2 block text-sm font-semibold text-slate-300">
+              <span className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
                 About Me
               </span>
 
@@ -226,19 +234,19 @@ export const Profile = () => {
                 onChange={handleChange}
                 rows={5}
                 placeholder="Tell us a little about yourself..."
-                className="w-full resize-none rounded-xl border border-slate-700/60 bg-slate-800/60 px-4 py-3 text-sm text-white outline-none transition-all duration-300 placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700/60 dark:bg-slate-800/60 dark:text-white dark:placeholder:text-slate-500"
               />
             </label>
 
           </div>
 
           {/* Actions */}
-          <div className="mt-7 flex flex-col-reverse gap-3 border-t border-slate-700/60 pt-6 sm:flex-row sm:justify-end">
+          <div className="mt-7 flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 dark:border-slate-700/60 sm:flex-row sm:justify-end">
 
             <button
               type="button"
               onClick={handleReset}
-              className="rounded-xl border border-slate-600/70 bg-slate-800/50 px-6 py-3 text-sm font-semibold text-slate-300 transition-all duration-300 hover:border-slate-500 hover:bg-slate-700 hover:text-white"
+              className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition-all duration-300 hover:border-slate-400 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-600/70 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-700 dark:hover:text-white"
             >
               Reset Changes
             </button>
